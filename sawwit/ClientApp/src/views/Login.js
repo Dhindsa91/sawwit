@@ -12,6 +12,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { login } from "../api/user";
+import { connect } from "react-redux";
+import { setUser } from "../redux";
+import store from "../redux/store";
 
 export class Login extends React.Component {
   constructor(props) {
@@ -19,7 +22,7 @@ export class Login extends React.Component {
     this.state = {
       email: "",
       password: "",
-      errorMessage: ''
+      errorMessage: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -30,21 +33,25 @@ export class Login extends React.Component {
   async handleSubmit(event) {
     event.preventDefault();
 
-
     login(this.state.email, this.state.password).then((response) => {
       console.log(response);
       if (response.data.ok === false) {
-        if (response.data && response.data.error)
-          console.log(response.data);
-          this.setState({errorMessage: response.data.error})
+        if (response.data && response.data.error) console.log(response.data);
+        this.setState({ errorMessage: response.data.error });
       } else {
-        localStorage.setItem('token', response.data.token)
-        localStorage.setItem('email', response.data.email)
-
-        // this.props.history.push("/");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("email", response.data.email);
+        store.dispatch(setUser(response.data));
+        this.props.history.push("/");
       }
     });
   }
+
+  //  mapDispatchToProps = dispatch => {
+  //   return {
+  //     setUser: () => dispatch(setUser())
+  //   }
+  // }
 
   render() {
     return (
@@ -83,11 +90,11 @@ export class Login extends React.Component {
                 id="password"
                 autoComplete="current-password"
               />
-              <Box item className="error-message" >
-                  <small>
-                    <p id="error-msg">{this.state.errorMessage}</p>
-                  </small>
-                </Box>
+              <Box item className="error-message">
+                <small>
+                  <p id="error-msg">{this.state.errorMessage}</p>
+                </small>
+              </Box>
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
@@ -113,7 +120,6 @@ export class Login extends React.Component {
                   </Link>
                 </Grid>
               </Grid>
-
             </form>
           </div>
           <Box mt={8}>

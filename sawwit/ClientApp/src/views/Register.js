@@ -13,6 +13,7 @@ import Box from "@material-ui/core/Box";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
+import store from "../redux/store";
 
 export class Register extends React.Component {
   constructor(props) {
@@ -29,13 +30,18 @@ export class Register extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  componentDidMount() {
+    console.log(store.getState().user);
+  }
+
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
   }
   async handleSubmit(event) {
     event.preventDefault();
     this.setState({ errorMessage: "" });
-    console.log(this.state.password)
+    console.log(this.state.password);
     //Check: no empty fields & passwords match
     //if(!this.state.firstname || !this.state.lastname || !this.state.email || !this.state.username || !this.state.password || !this.state.confirmPassword) return this.setState({errorMessage: 'Please complete all fields.'})
     if (this.state.password !== this.state.confirmPassword)
@@ -50,10 +56,11 @@ export class Register extends React.Component {
     )
       .then((response) => {
         if (response.data.ok === false) {
-          if (response.data && response.data.error)
-            console.log(response.data);
+          if (response.data && response.data.error) console.log(response.data);
           response.data.error
-            ? this.setState({ errorMessage: "An error has occured, please try again later."})
+            ? this.setState({
+                errorMessage: "An error has occured, please try again later.",
+              })
             : this.setState({
                 errorMessage: "An error has occured, please try again later.",
               });

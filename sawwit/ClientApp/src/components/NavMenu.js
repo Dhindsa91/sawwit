@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import store from "../redux/store";
 import {
   Collapse,
   Container,
@@ -19,6 +20,8 @@ export class NavMenu extends Component {
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
       collapsed: true,
+      isLoggedIn:
+        Object.keys(store.getState().user.user).length !== 0 ? true : false,
     };
   }
 
@@ -44,18 +47,33 @@ export class NavMenu extends Component {
               isOpen={!this.state.collapsed}
               navbar
             >
-              <ul className="navbar-nav flex-grow">
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/login">
-                    Login
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/register">
-                    Register
-                  </NavLink>
-                </NavItem>
-              </ul>
+              {this.state.isLoggedIn ? (
+                <ul className="navbar-nav flex-grow">
+                  <NavItem>
+                    <NavLink tag={Link} className="text-dark" to="#">
+                      Placeholder
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink tag={Link} className="text-dark" to="#">
+                      Account
+                    </NavLink>
+                  </NavItem>
+                </ul>
+              ) : (
+                <ul className="navbar-nav flex-grow">
+                  <NavItem>
+                    <NavLink tag={Link} className="text-dark" to="/login">
+                      Login
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink tag={Link} className="text-dark" to="/register">
+                      Register
+                    </NavLink>
+                  </NavItem>
+                </ul>
+              )}
             </Collapse>
           </Container>
         </Navbar>

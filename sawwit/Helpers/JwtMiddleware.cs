@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using sawwit.Controllers;
+using sawwit.Helpers;
+using sawwit.Models;
 using sawwit.Services;
 
 namespace sawwit.Helpers {
@@ -16,22 +20,23 @@ namespace sawwit.Helpers {
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings) {
             _next = next;
             _appSettings = appSettings.Value;
+
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService) {
+        public async Task Invoke(HttpContext context, IUserService userService, UserDBContext DbContext) {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             Console.WriteLine("Invoking {0}", token);
+            // Console.WriteLine("User {0}", context.User);
 
             if(token != null) {
-                attachUserToContext(context, userService, token);
+                attachUserToContext(context, userService, DbContext, token);
             }
             await _next(context);
         }
 
-        private void attachUserToContext(HttpContext context, IUserService userService, string token) {
-            Console.WriteLine("Token Found");
-            try {
+        private void attachUserToContext(HttpContext context, IUserService userService, UserDBContext DbContext, string token) {
 
+            try {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters {
@@ -46,14 +51,12 @@ namespace sawwit.Helpers {
                 var jwtToken =(JwtSecurityToken) validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                Console.WriteLine(userId);
+                var user = DbContext.users
+                    .FromSqlRaw("SELECT * FROM users WHERE users.id = {0}", userId).ToList();
+
                 // attach user to context on successful jwt validation
-                context.Items["User"] = new {
-                    id = 0,
-                    email = "arvinddhindsa@gmail.com",
-                    firstName = "arvind",
-                    lastName = "dhindsa",
-                };
+                context.Items["User"] = user;
+                _next(context);
 
             } catch {
                 // do nothing if jwt validation fails

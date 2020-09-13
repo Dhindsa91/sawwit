@@ -15,14 +15,13 @@ export async function createAccount(firstName, lastName, email, username, passwo
   });
 }
 
-
 export async function login(email, password) {
   return await axios({
     method: "post",
     url: `api/user/login`,
     data: {
       email,
-      password
+      password,
     },
   });
 }

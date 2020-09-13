@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using sawwit.Models;
 using BC = BCrypt.Net.BCrypt;
+using Microsoft.AspNetCore.Http;
 using sawwit.Helpers;
 using sawwit.Services;
 
@@ -35,12 +36,10 @@ namespace sawwit.Controllers {
                     .FromSqlRaw("SELECT * FROM users WHERE users.email = {0}", user.email).ToListAsync();
 
                 if(alreadyExists.Count() > 0) {
-
                     var errorResponse = new {
                         error = "User already exists.",
                         ok = false
                     };
-
                     return Json(errorResponse);
 
                 } else {
@@ -92,8 +91,6 @@ namespace sawwit.Controllers {
                     return Json(errorResponse);
 
                 } else {
-                    Console.WriteLine(loginAccount.password);
-                    Console.WriteLine(user.password);
 
                     if(BC.Verify(user.password, loginAccount.password)) {
                         var response = _userService.Authenticate(user);
@@ -129,8 +126,7 @@ namespace sawwit.Controllers {
 
         [HttpGet("valid")]
         [Authorize]
-        public IActionResult valid([FromBody] User user) {
-
+        public IActionResult valid() {
             return Json(new { test = true });
         }
     }
