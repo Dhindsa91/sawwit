@@ -6,21 +6,17 @@ export class Index extends Component {
   static displayName = Index.name;
 
   componentDidMount() {
-    console.log(Object.keys(store.getState().user.user).length !== 0);
-
     return axios({
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      method: "post",
+      method: "get",
       url: `api/user/valid`,
-      body: {
-        email: localStorage.getItem("email"),
-      },
+
     }).then((results) => {
       console.log(results);
     });
   }
 
   render() {
-    return <h1>INDEX</h1>;
+    return <h1 className="jumbotron">INDEX</h1>;
   }
 }

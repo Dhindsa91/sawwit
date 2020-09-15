@@ -13,22 +13,16 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
- const store = createStore(
+const store = createStore(
   persistedReducer,
   composeWithDevTools(applyMiddleware(logger, thunk))
 );
 
-store.subscribe(() => {
-  console.log(store.getState());
-});
+// store.subscribe(() => {
+//   console.log(store.getState());
+// });
 
 let persistor = persistStore(store);
 
-
-export default store
-export const persistedStore = persistor
-
-
-
- 
-
+export default store;
+export const persistedStore = persistor;

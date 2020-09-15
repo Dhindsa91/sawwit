@@ -41,7 +41,16 @@ export class Login extends React.Component {
       } else {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("email", response.data.email);
-        store.dispatch(setUser(response.data));
+
+        let user = {
+          email: response.data.email,
+          token: response.data.token,
+          firstname: response.data.firstname,
+          lastname: response.data.lastname
+
+        }
+
+        store.dispatch(setUser(user));
         this.props.history.push("/");
       }
     });

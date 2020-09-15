@@ -8,14 +8,16 @@ namespace sawwit.Helpers {
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter {
 
         public void OnAuthorization(AuthorizationFilterContext context) {
-            var user =(User) context.HttpContext.Items["User"];
-            Console.WriteLine("Auth {0}", user.id);
+            Console.WriteLine("We Are Here");
+            var user = context.HttpContext.Items["User"];
+
             if(user == null) {
                 // not logged in
+                Console.WriteLine("User equal null");
                 context.Result = new JsonResult(new { message = "Unauthorized", error = true, ok = false }) { StatusCode = StatusCodes.Status401Unauthorized };
 
             }
-            Console.WriteLine("123");
+
         }
 
     }
